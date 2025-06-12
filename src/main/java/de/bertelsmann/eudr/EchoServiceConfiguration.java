@@ -1,15 +1,33 @@
 package de.bertelsmann.eudr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.wss4j.dom.WSConstants;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
+
+import jakarta.xml.soap.SOAPMessage;
 
 @Configuration
 public class EchoServiceConfiguration {
+
+    @Bean (name = "messageFactory")
+    public SaajSoapMessageFactory messageFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(SOAPMessage.WRITE_XML_DECLARATION, "true");
+
+        SaajSoapMessageFactory msgFactory = new SaajSoapMessageFactory();
+        msgFactory.setMessageProperties(props);
+        msgFactory.setSoapVersion(org.springframework.ws.soap.SoapVersion.SOAP_11);
+
+        return msgFactory;
+    }
 
     @Bean
     public Wss4jSecurityInterceptor securityInterceptor() {
@@ -35,9 +53,11 @@ public class EchoServiceConfiguration {
     public EchoServiceClient echoServiceClient(Jaxb2Marshaller marshaller) {
         EchoServiceClient client = new EchoServiceClient();
         client.setDefaultUri("https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService?testEcho");
+        // client.setDefaultUri("http://localhost:8080/xyz");
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
         client.setInterceptors(new ClientInterceptor[]{ securityInterceptor() });
+        client.setMessageFactory(messageFactory());
         return client;
     }
 

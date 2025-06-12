@@ -50,6 +50,7 @@
    <wsdl:service name="EudrEchoService">
       <wsdl:port name="EudrEchoServiceEndpoint" binding="echo:EudrEchoServiceSoapBinding">
          <soap:address location="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService"/>
+         <!--soap:address location="http://localhost:8080/xyz"/-->
       </wsdl:port>
    </wsdl:service>
    <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">

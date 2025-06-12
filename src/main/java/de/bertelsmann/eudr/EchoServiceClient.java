@@ -136,7 +136,8 @@ public class EchoServiceClient extends WebServiceGatewaySupport {
         log.info("Requesting response from EUDR Echo Service");
 
         EudrEchoResponseType response = (EudrEchoResponseType) template.marshalSendAndReceive(
-            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService?testEcho", 
+            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService?testEcho",
+            // "http://localhost:8080/xyz",
             jaxbEudrEchoRequestType, 
             callback);
 

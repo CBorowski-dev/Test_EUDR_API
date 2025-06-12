@@ -1,0 +1,84 @@
+POST /xyz HTTP/1.1
+Accept-Encoding: gzip
+Accept: text/xml, text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+SOAPAction: "http://ec.europa.eu/tracesnt/eudr/echo"
+Content-Type: text/xml; charset=utf-8
+Cache-Control: no-cache
+Pragma: no-cache
+User-Agent: Java/21.0.7
+Host: localhost:8080
+Connection: keep-alive
+Content-Length: 1346
+
+<SOAP-ENV:Envelope
+	xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header>
+		<wsse:Security
+			xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+			xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" SOAP-ENV:mustUnderstand="1">
+			<wsse:UsernameToken wsu:Id="UsernameToken-a76ffed9-d459-427e-ac7e-61a79dc755fa">
+				<wsse:Username>xyz</wsse:Username>
+				<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">F7w8uv/tKR283Bouqi0prG+dBPk=</wsse:Password>
+				<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">SknemH7uW+FCyEIt2adVWQ==</wsse:Nonce>
+				<wsu:Created>2025-06-12T09:30:46.324Z</wsu:Created>
+			</wsse:UsernameToken>
+			<wsu:Timestamp wsu:Id="TS-b72bf2df-9316-43f8-9ad3-35d55af149f6">
+				<wsu:Created>2025-06-12T09:30:46.307Z</wsu:Created>
+				<wsu:Expires>2025-06-12T09:31:46.307Z</wsu:Expires>
+			</wsu:Timestamp>
+		</wsse:Security>
+		<v4:WebServiceClientId
+			xmlns:v4="http://ec.europa.eu/sanco/tracesnt/base/v4">eudr-test
+		</v4:WebServiceClientId>
+	</SOAP-ENV:Header>
+	<SOAP-ENV:Body>
+		<ns2:EudrEchoRequest
+			xmlns:ns2="http://ec.europa.eu/tracesnt/eudr/echo">
+			<ns2:query>Hello</ns2:query>
+		</ns2:EudrEchoRequest>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+------------------------------------------------
+
+POST /xyz HTTP/1.1
+Host: localhost:8080
+User-Agent: Zeep/4.2.1 (www.python-zeep.org)
+Accept-Encoding: gzip, deflate, br
+Accept: */*
+Connection: keep-alive
+SOAPAction: "http://ec.europa.eu/tracesnt/eudr/echo"
+Content-Type: text/xml; charset=utf-8
+Content-Length: 1360
+
+<?xml version='1.0' encoding='utf-8'?>
+<soap-env:Envelope
+	xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap-env:Header>
+		<ns0:WebServiceClientId
+			xmlns:ns0="http://ec.europa.eu/sanco/tracesnt/base/v4">eudr-test
+		</ns0:WebServiceClientId>
+		<wsse:Security
+			xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+			<wsse:UsernameToken>
+				<wsse:Username>xyz</wsse:Username>
+				<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">Wauon6IQnZKe7xa2MCE2q9brPxU=</wsse:Password>
+				<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">rIEmMH+1gJrGkDVu24MxEw==</wsse:Nonce>
+				<wsu:Created
+					xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">2025-06-12T09:54:31+00:00
+				</wsu:Created>
+			</wsse:UsernameToken>
+			<wsu:Timestamp
+				xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+				<wsu:Created>2025-06-12T09:54:30.675Z</wsu:Created>
+				<wsu:Expires>2025-06-12T09:56:30.675Z</wsu:Expires>
+			</wsu:Timestamp>
+		</wsse:Security>
+	</soap-env:Header>
+	<soap-env:Body>
+		<ns0:EudrEchoRequest
+			xmlns:ns0="http://ec.europa.eu/tracesnt/eudr/echo">
+			<ns0:query>Hello EUDR test system!</ns0:query>
+		</ns0:EudrEchoRequest>
+	</soap-env:Body>
+</soap-env:Envelope>
