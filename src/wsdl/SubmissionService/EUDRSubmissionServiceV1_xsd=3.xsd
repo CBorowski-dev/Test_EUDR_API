@@ -1,0 +1,53 @@
+<!--Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.3.2-wls141100-b230825.0707 git-revision#5f81cab.-->
+<xs:schema targetNamespace="http://ec.europa.eu/tracesnt/certificate/eudr/submission/v1" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://ec.europa.eu/sanco/tracesnt/base/v4" xmlns:error="http://ec.europa.eu/sanco/tracesnt/error/v01" xmlns:model="http://ec.europa.eu/tracesnt/certificate/eudr/model/v1" xmlns:eudrsubmission="http://ec.europa.eu/tracesnt/certificate/eudr/submission/v1">
+   <xs:import schemaLocation="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1?xsd=2" namespace="http://ec.europa.eu/tracesnt/certificate/eudr/model/v1"/>
+   <xs:import schemaLocation="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1?xsd=4" namespace="http://ec.europa.eu/sanco/tracesnt/error/v01"/>
+   <xs:element name="SubmitStatementRequest" type="eudrsubmission:SubmitStatementRequestType"/>
+   <xs:element name="SubmitStatementResponse" type="eudrsubmission:SubmitStatementResponseType"/>
+   <xs:element name="AmendStatementRequest" type="eudrsubmission:AmendStatementRequestType"/>
+   <xs:element name="AmendStatementResponse" type="eudrsubmission:StatementModificationResponseType"/>
+   <xs:element name="RetractStatementRequest" type="eudrsubmission:RetractStatementRequestType"/>
+   <xs:element name="RetractStatementResponse" type="eudrsubmission:StatementModificationResponseType"/>
+   <xs:element name="DdsPermissionDeniedException" type="error:CertificatePermissionDeniedExceptionType"/>
+   <xs:element name="BusinessRulesValidationException" type="error:BusinessRulesValidationExceptionType"/>
+   <!--TYPE DEFINITIONS-->
+   <xs:complexType name="SubmitStatementRequestType">
+      <xs:annotation>
+         <xs:documentation>Type for the initial submission of a DDS</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:element name="operatorType" type="model:OperatorActivityType"/>
+         <xs:element name="statement" type="model:DueDiligenceStatementBaseType"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="SubmitStatementResponseType">
+      <xs:annotation>
+         <xs:documentation>Response to the submission of a DDS</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:element name="ddsIdentifier" type="model:uuidType"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="AmendStatementRequestType">
+      <xs:annotation>
+         <xs:documentation>Type for the amendment of a DDS</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:element name="ddsIdentifier" type="model:uuidType"/>
+         <xs:element name="statement" type="model:DueDiligenceStatementBaseType"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="RetractStatementRequestType">
+      <xs:annotation>
+         <xs:documentation>Retract a DDS</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:element name="ddsIdentifier" type="model:uuidType"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="StatementModificationResponseType">
+      <xs:sequence>
+         <xs:element name="status" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+</xs:schema>

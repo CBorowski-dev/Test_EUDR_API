@@ -1,0 +1,22 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header>
+    <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" SOAP-ENV:mustUnderstand="1">
+      <wsse:UsernameToken wsu:Id="UsernameToken-b17d66ae-1a34-415e-96fd-2989e49e6eda">
+        <wsse:Username>xyz</wsse:Username>
+        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">VdDrLaRNf7pYMOqs3Ie4UM/ieUQ=</wsse:Password>
+        <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">u3ARYSjVNUv1BPQ35v7t7w==</wsse:Nonce>
+        <wsu:Created>2025-06-11T18:57:21.605Z</wsu:Created>
+      </wsse:UsernameToken>
+      <wsu:Timestamp wsu:Id="TS-ac0d35dc-11e6-4387-9a10-7cfe54b05aee">
+        <wsu:Created>2025-06-11T18:57:21.597Z</wsu:Created>
+        <wsu:Expires>2025-06-11T18:58:21.597Z</wsu:Expires>
+      </wsu:Timestamp>
+    </wsse:Security>
+    <v4:WebServiceClientId xmlns:v4="http://ec.europa.eu/sanco/tracesnt/base/v4">eudr-test</v4:WebServiceClientId>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns2:EudrEchoRequest xmlns:ns2="http://ec.europa.eu/tracesnt/eudr/echo">
+      <ns2:query>Hallo EUDR Echo Service!</ns2:query>
+    </ns2:EudrEchoRequest>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

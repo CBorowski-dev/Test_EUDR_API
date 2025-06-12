@@ -1,0 +1,180 @@
+<!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.3.2-wls141100-b230825.0707 git-revision#5f81cab. -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:base="http://ec.europa.eu/sanco/tracesnt/base/v4" xmlns:body="http://ec.europa.eu/tracesnt/body/v3" xmlns:eudrsubmission="http://ec.europa.eu/tracesnt/certificate/eudr/submission/v1" targetNamespace="http://ec.europa.eu/tracesnt/certificate/eudr/submission/v1">
+				  
+    <wsdl:import location="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1?wsdl=1" namespace="http://ec.europa.eu/sanco/tracesnt/base/v4"/>
+    
+	<wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
+		<sp:TransportBinding>
+			<wsp:Policy>
+				<sp:TransportToken>
+					<wsp:Policy>
+						<sp:HttpsToken/>
+					</wsp:Policy>
+				</sp:TransportToken>
+				<sp:AlgorithmSuite>
+					<wsp:Policy>
+						<sp:Basic256/>
+					</wsp:Policy>
+				</sp:AlgorithmSuite>
+				<sp:Layout>
+					<wsp:Policy>
+						<sp:Lax/>
+					</wsp:Policy>
+				</sp:Layout>
+				<sp:IncludeTimestamp/>
+			</wsp:Policy>
+		</sp:TransportBinding>
+		<sp:SupportingTokens>
+			<wsp:Policy>
+				<sp:UsernameToken sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+					<wsp:Policy>
+						<sp:HashPassword/>
+						<sp:WssUsernameToken10/>
+					</wsp:Policy>
+				</sp:UsernameToken>
+			</wsp:Policy>
+		</sp:SupportingTokens>
+	</wsp:Policy>
+
+    <wsdl:types>
+        <xs:schema>
+            <xs:import schemaLocation="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1?xsd=3" namespace="http://ec.europa.eu/tracesnt/certificate/eudr/submission/v1"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="SubmitStatementRequest">
+        <wsdl:part name="statement" element="eudrsubmission:SubmitStatementRequest"/>
+    </wsdl:message>
+        
+    <wsdl:message name="SubmitStatementResponse">
+        <wsdl:part name="statementIdentifier" element="eudrsubmission:SubmitStatementResponse"/>
+    </wsdl:message>
+    
+    <wsdl:message name="AmendStatementRequest">
+        <wsdl:part name="statement" element="eudrsubmission:AmendStatementRequest"/>
+    </wsdl:message>
+    
+	<wsdl:message name="AmendStatementResponse">
+		<wsdl:part name="response" element="eudrsubmission:AmendStatementResponse"/>
+	</wsdl:message>
+	
+	<wsdl:message name="RetractStatementRequest">
+		<wsdl:part name="statementIdentifier" element="eudrsubmission:RetractStatementRequest"/>
+	</wsdl:message>
+	
+	<wsdl:message name="RetractStatementResponse">
+		<wsdl:part name="response" element="eudrsubmission:RetractStatementResponse"/>
+	</wsdl:message>
+
+	<wsdl:message name="BusinessRulesValidationExceptionMessage">
+		<wsdl:part name="fault" element="eudrsubmission:BusinessRulesValidationException"/>
+	</wsdl:message>
+
+	<wsdl:message name="DdsPermissionDeniedExceptionMessage">
+		<wsdl:part name="fault" element="eudrsubmission:DdsPermissionDeniedException"/>
+	</wsdl:message>
+	
+    <wsdl:portType name="EUDRSubmissionPort">
+    	
+    	<wsdl:operation name="submitDds">
+    		<wsdl:documentation>
+    		</wsdl:documentation>
+    		<wsdl:input message="eudrsubmission:SubmitStatementRequest" name="SubmitStatementRequest"/>
+    		<wsdl:output message="eudrsubmission:SubmitStatementResponse" name="SubmitStatementResponse"/>
+    		<wsdl:fault name="BusinessRulesValidationException" message="eudrsubmission:BusinessRulesValidationExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    		<wsdl:fault name="DdsPermissionDeniedException" message="eudrsubmission:DdsPermissionDeniedExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    	</wsdl:operation>
+    	
+    	<wsdl:operation name="amendDds">
+    		<wsdl:documentation>
+    		</wsdl:documentation>
+    		<wsdl:input message="eudrsubmission:AmendStatementRequest" name="AmendStatementRequest"/>
+    		<wsdl:output message="eudrsubmission:AmendStatementResponse" name="AmendStatementResponse"/>
+    		<wsdl:fault name="BusinessRulesValidationException" message="eudrsubmission:BusinessRulesValidationExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    		<wsdl:fault name="DdsPermissionDeniedException" message="eudrsubmission:DdsPermissionDeniedExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    	</wsdl:operation>
+    	
+    	<wsdl:operation name="retractDds">
+    		<wsdl:documentation>
+    		</wsdl:documentation>
+    		<wsdl:input message="eudrsubmission:RetractStatementRequest" name="RetractStatementRequest"/>
+    		<wsdl:output message="eudrsubmission:RetractStatementResponse" name="RetractStatementResponse"/>
+    		<wsdl:fault name="BusinessRulesValidationException" message="eudrsubmission:BusinessRulesValidationExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    		<wsdl:fault name="DdsPermissionDeniedException" message="eudrsubmission:DdsPermissionDeniedExceptionMessage">
+    			<wsdl:documentation/>
+    		</wsdl:fault>
+    	</wsdl:operation>
+    </wsdl:portType>
+    
+    <wsdl:binding name="EUDRSubmissionSoapBinding" type="eudrsubmission:EUDRSubmissionPort">
+        
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <wsdl:operation name="submitDds">
+            <soap:operation soapAction="http://ec.europa.eu/tracesnt/certificate/eudr/submission/submitDds"/>
+            <wsdl:input>
+                <soap:header use="literal" part="webServiceClientId" message="base:WebServiceClientIdHeader"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="BusinessRulesValidationException">
+				<soap:fault name="BusinessRulesValidationException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="DdsPermissionDeniedException">
+				<soap:fault name="DdsPermissionDeniedException" use="literal"/>
+			</wsdl:fault>
+        </wsdl:operation>
+        
+        <wsdl:operation name="amendDds">
+            <soap:operation soapAction="http://ec.europa.eu/tracesnt/certificate/eudr/submission/amendDds"/>
+            <wsdl:input>
+                <soap:header use="literal" part="webServiceClientId" message="base:WebServiceClientIdHeader"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="BusinessRulesValidationException">
+				<soap:fault name="BusinessRulesValidationException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="DdsPermissionDeniedException">
+				<soap:fault name="DdsPermissionDeniedException" use="literal"/>
+			</wsdl:fault>
+        </wsdl:operation>
+        
+        <wsdl:operation name="retractDds">
+            <soap:operation soapAction="http://ec.europa.eu/tracesnt/certificate/eudr/submission/retractDds"/>
+            <wsdl:input>
+                <soap:header use="literal" part="webServiceClientId" message="base:WebServiceClientIdHeader"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="BusinessRulesValidationException">
+				<soap:fault name="BusinessRulesValidationException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="DdsPermissionDeniedException">
+				<soap:fault name="DdsPermissionDeniedException" use="literal"/>
+			</wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:service name="EUDRSubmissionServiceV1">
+        <wsdl:port name="EUDRSubmissionServiceV1Endpoint" binding="eudrsubmission:EUDRSubmissionSoapBinding">
+            <soap:address location="https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
