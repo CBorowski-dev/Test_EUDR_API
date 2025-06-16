@@ -15,9 +15,10 @@ import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 import jakarta.xml.soap.SOAPMessage;
 
 @Configuration
-public class EchoServiceConfiguration {
+public class SubmissionServiceConfiguration {
 
-    @Bean (name = "messageFactory")
+
+    @Bean (name = "submissionServiceMessageFactory")
     public SaajSoapMessageFactory messageFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(SOAPMessage.WRITE_XML_DECLARATION, "true");
@@ -29,7 +30,7 @@ public class EchoServiceConfiguration {
         return msgFactory;
     }
 
-    @Bean
+    @Bean (name = "submissionServiceSecurityInterceptor")
     public Wss4jSecurityInterceptor securityInterceptor() {
         Wss4jSecurityInterceptor security = new Wss4jSecurityInterceptor();
         security.setSecurementActions(WSHandlerConstants.TIMESTAMP + " " + WSHandlerConstants.USERNAME_TOKEN);
@@ -41,18 +42,18 @@ public class EchoServiceConfiguration {
         return security;
     }
 
-/*     @Bean
+    @Bean (name = "submissionServiceMarshaller")
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         // this package must match the package in the <generatePackage> specified in pom.xml
-        marshaller.setContextPath("eu.europa.ec.tracesnt.eudr.echo");
+        marshaller.setContextPath("eu.europa.ec.tracesnt.certificate.eudr.submission.v1");
         return marshaller;
     }
- */
+
     @Bean
-    public EchoServiceClient echoServiceClient(Jaxb2Marshaller marshaller) {
-        EchoServiceClient client = new EchoServiceClient();
-        client.setDefaultUri("https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService");
+    public SubmissionServiceClient submissionServiceClient(Jaxb2Marshaller marshaller) {
+        SubmissionServiceClient client = new SubmissionServiceClient();
+        client.setDefaultUri("https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1");
         // client.setDefaultUri("http://localhost:8080/xyz");
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
@@ -60,5 +61,4 @@ public class EchoServiceConfiguration {
         client.setMessageFactory(messageFactory());
         return client;
     }
-
 }

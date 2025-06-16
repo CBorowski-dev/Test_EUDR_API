@@ -60,16 +60,31 @@
                 <version>4.1.2</version> <!-- siehe https://stackoverflow.com/questions/77918817/cxf-codegen-plugin-and-jaxb-maven-plugin-for-java-21-and-higher -->
                 <executions>
                     <execution>
-                        <id>generate-sources</id>
+                        <id>generate-echo-sources</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>wsdl2java</goal>
                         </goals>
                         <configuration>
-                            <sourceRoot>${project.build.directory}/generated-sources/</sourceRoot>
+                            <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
                             <wsdlOptions>
                                 <wsdlOption>
                                     <wsdl>${project.basedir}/src/wsdl/EchoService/EUDREchoService.wsdl</wsdl>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-submission-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                        <configuration>
+                            <sourceRoot>${project.build.directory}/generated-sources</sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${project.basedir}/src/wsdl/SubmissionService/EUDRSubmissionServiceV1.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>

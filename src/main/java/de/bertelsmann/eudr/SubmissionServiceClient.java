@@ -2,10 +2,15 @@ package de.bertelsmann.eudr;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+
+import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
@@ -14,18 +19,20 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import org.springframework.ws.WebServiceMessage;
 
-import javax.xml.namespace.QName;
-
-import eu.europa.ec.tracesnt.eudr.echo.*;
-
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.OperatorActivityType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.SupplementaryUnitQualifier;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.ActivityType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.CommercialDescriptionType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.CommodityType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.DueDiligenceStatementBaseType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.GoodsMeasureType;
+import eu.europa.ec.tracesnt.certificate.eudr.submission.v1.*;
 import jakarta.xml.bind.JAXBElement;
 
+public class SubmissionServiceClient extends WebServiceGatewaySupport {
 
-public class EchoServiceClient extends WebServiceGatewaySupport {
-
-    private static final Logger log = LoggerFactory.getLogger(EchoServiceClient.class);
+    private static final Logger log = LoggerFactory.getLogger(SubmissionServiceClient.class);
     
     // Custom interceptor to log SOAP messages
     private static class LoggingClientInterceptor implements ClientInterceptor {
@@ -77,15 +84,43 @@ public class EchoServiceClient extends WebServiceGatewaySupport {
         }
     }
 
-    public EudrEchoResponseType getEchoServiceResponse(String query) {
+    public SubmitStatementResponseType getServiceResponse() {
 
         ObjectFactory objectFactory = new ObjectFactory();
-        EudrEchoRequestType request = objectFactory.createEudrEchoRequestType();
-        request.setQuery(query);
+        SubmitStatementRequestType request = objectFactory.createSubmitStatementRequestType();
 
-        JAXBElement<EudrEchoRequestType> jaxbEudrEchoRequestType = objectFactory.createEudrEchoRequest(request);
+        // set Operator Type
+        request.setOperatorType(OperatorActivityType.OPERATOR);
 
-        SoapActionCallback callback = new SoapActionCallback("http://ec.europa.eu/tracesnt/eudr/echo") {
+        eu.europa.ec.tracesnt.certificate.eudr.model.v1.ObjectFactory objectFactoryDDS = new eu.europa.ec.tracesnt.certificate.eudr.model.v1.ObjectFactory();
+        DueDiligenceStatementBaseType dds = objectFactoryDDS.createDueDiligenceStatementBaseType();
+
+        // set internal reference number
+        dds.setInternalReferenceNumber("BER-000001");
+
+        // set Activity Type
+        dds.setActivityType(ActivityType.DOMESTIC);
+
+        // set HSHeading
+        CommodityType commodityType = new CommodityType();
+        CommercialDescriptionType cdType = new CommercialDescriptionType();
+        cdType.setDescriptionOfGoods("Buch [Druckzeugsergebnis]");
+        GoodsMeasureType gmType = new GoodsMeasureType();
+        gmType.setNetWeight(new BigDecimal("2000"));
+        //gmType.setSupplementaryUnit(new BigInteger("2000"));
+        //gmType.setSupplementaryUnitQualifier(SupplementaryUnitQualifier);
+        cdType.setGoodsMeasure(gmType);
+        commodityType.setDescriptors(cdType);
+
+        commodityType.setHsHeading("49011000");
+
+        dds.getCommodities().add(commodityType);
+        request.setStatement(dds);
+
+        JAXBElement<SubmitStatementRequestType> jaxbSubmitStatementRequestType = objectFactory.createSubmitStatementRequest(request);
+
+
+        SoapActionCallback callback = new SoapActionCallback("http://ec.europa.eu/tracesnt/certificate/eudr/submission/submitDds") {
 
             @Override
             public void doWithMessage(WebServiceMessage message) throws IOException {
@@ -121,16 +156,17 @@ public class EchoServiceClient extends WebServiceGatewaySupport {
         
         template.setInterceptors(newInterceptors);
         
-        log.info("Requesting response from EUDR Echo Service");
+        log.info("Requesting response from EUDR Submission Service");
 
-        EudrEchoResponseType response = (EudrEchoResponseType) template.marshalSendAndReceive(
-            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService",
+        SubmitStatementResponseType response = (SubmitStatementResponseType) template.marshalSendAndReceive(
+            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1",
             // "http://localhost:8080/xyz",
-            jaxbEudrEchoRequestType, 
+            jaxbSubmitStatementRequestType, 
             callback);
 
-        log.info("\nResponse status: " + response.getStatus());
+        log.info("\nDDS Identifier: " + response.getDdsIdentifier());
 
         return response;
     }
+
 }

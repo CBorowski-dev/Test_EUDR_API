@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import eu.europa.ec.tracesnt.certificate.eudr.submission.v1.SubmitStatementResponseType;
 import eu.europa.ec.tracesnt.eudr.echo.EudrEchoResponseType;
 
 @SpringBootApplication
@@ -14,13 +15,21 @@ public class EudrApplication {
 		SpringApplication.run(EudrApplication.class, args);
 	}
 
-	@Bean
+/* 	@Bean
 	CommandLineRunner lookup(EchoServiceClient client) {
 		return args -> {
 			String query = "Hello";
 
 			EudrEchoResponseType response = client.getEchoServiceResponse(query);
 			System.err.println(response.getStatus());
+		};
+	}
+ */
+	@Bean
+	CommandLineRunner lookup(SubmissionServiceClient client) {
+		return args -> {
+			SubmitStatementResponseType response = client.getServiceResponse();
+			System.err.println(response.getDdsIdentifier());
 		};
 	}
 }
