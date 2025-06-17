@@ -1,6 +1,7 @@
 old_plugin_def.txt
 Login-Daten.txt
 HELP.md
+src/main/resources/login.properties
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
