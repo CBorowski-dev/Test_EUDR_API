@@ -25,6 +25,9 @@ import jakarta.xml.bind.JAXBElement;
 
 public class EchoServiceClient extends WebServiceGatewaySupport {
 
+    public static final String URI = "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService";
+    // public static final String URI = "http://localhost:8082/xyz";
+
     private static final Logger log = LoggerFactory.getLogger(EchoServiceClient.class);
     
     // Custom interceptor to log SOAP messages
@@ -123,14 +126,13 @@ public class EchoServiceClient extends WebServiceGatewaySupport {
         
         log.info("Requesting response from EUDR Echo Service");
 
-        EudrEchoResponseType response = (EudrEchoResponseType) template.marshalSendAndReceive(
-            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService",
-            // "http://localhost:8080/xyz",
+        JAXBElement<EudrEchoResponseType> response = (JAXBElement<EudrEchoResponseType>) template.marshalSendAndReceive(
+            EchoServiceClient.URI,
             jaxbEudrEchoRequestType, 
             callback);
 
-        log.info("\nResponse status: " + response.getStatus());
+        log.info("\nResponse status: " + response.getValue().getStatus());
 
-        return response;
+        return response.getValue();
     }
 }

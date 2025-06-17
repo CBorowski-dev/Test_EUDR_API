@@ -58,8 +58,7 @@ public class EchoServiceConfiguration {
     @Bean
     public EchoServiceClient echoServiceClient(Jaxb2Marshaller marshaller) {
         EchoServiceClient client = new EchoServiceClient();
-        client.setDefaultUri("https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService");
-        // client.setDefaultUri("http://localhost:8080/xyz");
+        client.setDefaultUri(EchoServiceClient.URI);
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
         client.setInterceptors(new ClientInterceptor[]{ securityInterceptor() });

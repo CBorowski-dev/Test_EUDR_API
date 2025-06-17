@@ -36,8 +36,8 @@ import jakarta.xml.bind.JAXBElement;
 
 public class SubmissionServiceClient extends WebServiceGatewaySupport {
 
-    // public static final String URI = "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1";
-    public static final String URI = "http://localhost:8082/xyz";
+    public static final String URI = "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1";
+    // public static final String URI = "http://localhost:8082/xyz";
 
     private static final Logger log = LoggerFactory.getLogger(SubmissionServiceClient.class);
     
@@ -177,14 +177,14 @@ public class SubmissionServiceClient extends WebServiceGatewaySupport {
         
         log.info("Requesting response from EUDR Submission Service");
 
-        SubmitStatementResponseType response = (SubmitStatementResponseType) template.marshalSendAndReceive(
-            URI,
+        JAXBElement<SubmitStatementResponseType> response = (JAXBElement<SubmitStatementResponseType>) template.marshalSendAndReceive(
+            SubmissionServiceClient.URI,
             jaxbSubmitStatementRequestType, 
             callback);
 
-        log.info("\nDDS Identifier: " + response.getDdsIdentifier());
+        log.info("\nDDS Identifier: " + response.getValue().getDdsIdentifier());
 
-        return response;
+        return response.getValue();
     }
 
 }
