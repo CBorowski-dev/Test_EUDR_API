@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
@@ -19,6 +20,8 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 
 import eu.europa.ec.tracesnt.certificate.eudr.model.v1.OperatorActivityType;
 import eu.europa.ec.tracesnt.certificate.eudr.model.v1.SupplementaryUnitQualifier;
@@ -27,10 +30,14 @@ import eu.europa.ec.tracesnt.certificate.eudr.model.v1.CommercialDescriptionType
 import eu.europa.ec.tracesnt.certificate.eudr.model.v1.CommodityType;
 import eu.europa.ec.tracesnt.certificate.eudr.model.v1.DueDiligenceStatementBaseType;
 import eu.europa.ec.tracesnt.certificate.eudr.model.v1.GoodsMeasureType;
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.ProducerType;
 import eu.europa.ec.tracesnt.certificate.eudr.submission.v1.*;
 import jakarta.xml.bind.JAXBElement;
 
 public class SubmissionServiceClient extends WebServiceGatewaySupport {
+
+    // public static final String URI = "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1";
+    public static final String URI = "http://localhost:8082/xyz";
 
     private static final Logger log = LoggerFactory.getLogger(SubmissionServiceClient.class);
     
@@ -41,6 +48,9 @@ public class SubmissionServiceClient extends WebServiceGatewaySupport {
         @Override
         public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
             try {
+                // HttpUrlConnection connection = (HttpUrlConnection) TransportContextHolder.getTransportContext().getConnection();
+                // connection.addRequestHeader("Accept", "application/soap+xml");
+
                 ByteArrayOutputStream requestStream = new ByteArrayOutputStream();
                 messageContext.getRequest().writeTo(requestStream);
                 System.out.println("\nSOAP Request XML:");
@@ -50,7 +60,7 @@ public class SubmissionServiceClient extends WebServiceGatewaySupport {
             }
             return true;
         }
-        
+
         @Override
         public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
             try {
@@ -106,13 +116,22 @@ public class SubmissionServiceClient extends WebServiceGatewaySupport {
         CommercialDescriptionType cdType = new CommercialDescriptionType();
         cdType.setDescriptionOfGoods("Buch [Druckzeugsergebnis]");
         GoodsMeasureType gmType = new GoodsMeasureType();
-        gmType.setNetWeight(new BigDecimal("2000"));
-        //gmType.setSupplementaryUnit(new BigInteger("2000"));
-        //gmType.setSupplementaryUnitQualifier(SupplementaryUnitQualifier);
+        //gmType.setNetWeight(new BigDecimal("2000"));
+        gmType.setSupplementaryUnit(new BigInteger("2000"));
+        gmType.setSupplementaryUnitQualifier(SupplementaryUnitQualifier.DTN);
         cdType.setGoodsMeasure(gmType);
         commodityType.setDescriptors(cdType);
 
-        commodityType.setHsHeading("49011000");
+        commodityType.setHsHeading("490110");
+
+        List<ProducerType> producers = commodityType.getProducers();
+        ProducerType producer = new ProducerType();
+        producer.setCountry("DE");
+        producer.setName("Mohn Media Mohndruck GmbH");
+        // see https://stevage.github.io/geojson-spec/
+        byte[] geometryGeojson = Base64.getEncoder().encode("{ \"type\": \"Point\",\"coordinates\": [ 51.907644, 08.411583 ] }".getBytes());
+        producer.setGeometryGeojson(geometryGeojson);
+        producers.add(producer);
 
         dds.getCommodities().add(commodityType);
         request.setStatement(dds);
@@ -159,8 +178,7 @@ public class SubmissionServiceClient extends WebServiceGatewaySupport {
         log.info("Requesting response from EUDR Submission Service");
 
         SubmitStatementResponseType response = (SubmitStatementResponseType) template.marshalSendAndReceive(
-            "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1",
-            // "http://localhost:8080/xyz",
+            URI,
             jaxbSubmitStatementRequestType, 
             callback);
 

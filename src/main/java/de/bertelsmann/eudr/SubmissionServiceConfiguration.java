@@ -53,8 +53,7 @@ public class SubmissionServiceConfiguration {
     @Bean
     public SubmissionServiceClient submissionServiceClient(Jaxb2Marshaller marshaller) {
         SubmissionServiceClient client = new SubmissionServiceClient();
-        client.setDefaultUri("https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EUDRSubmissionServiceV1");
-        // client.setDefaultUri("http://localhost:8080/xyz");
+        client.setDefaultUri(SubmissionServiceClient.URI);
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
         client.setInterceptors(new ClientInterceptor[]{ securityInterceptor() });
