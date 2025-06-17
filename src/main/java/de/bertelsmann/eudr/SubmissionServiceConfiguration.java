@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.wss4j.dom.WSConstants;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -17,6 +18,10 @@ import jakarta.xml.soap.SOAPMessage;
 @Configuration
 public class SubmissionServiceConfiguration {
 
+    @Value( "${username}" )
+    private String username;
+    @Value( "${password}" )
+    private String password;
 
     @Bean (name = "submissionServiceMessageFactory")
     public SaajSoapMessageFactory messageFactory() {
@@ -36,8 +41,8 @@ public class SubmissionServiceConfiguration {
         security.setSecurementActions(WSHandlerConstants.TIMESTAMP + " " + WSHandlerConstants.USERNAME_TOKEN);
         security.setSecurementPasswordType(WSConstants.PW_DIGEST);
         security.setSecurementTimeToLive(60);
-        security.setSecurementUsername("n00j5mmh");
-        security.setSecurementPassword("9QLJq19HFW4QSFyyeW4hBSivrehQlhb7xn2DjljT");
+        security.setSecurementUsername(username);
+        security.setSecurementPassword(password);
         security.setSecurementUsernameTokenNonce(true);
         return security;
     }
