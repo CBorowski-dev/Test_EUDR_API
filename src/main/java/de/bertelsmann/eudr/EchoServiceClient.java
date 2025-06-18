@@ -23,63 +23,13 @@ import eu.europa.ec.tracesnt.eudr.echo.*;
 import jakarta.xml.bind.JAXBElement;
 
 
-public class EchoServiceClient extends WebServiceGatewaySupport {
+public class EchoServiceClient extends ServiceClient {
 
     public static final String URI = "https://acceptance.eudr.webcloud.ec.europa.eu:443/tracesnt/ws/EudrEchoService";
     // public static final String URI = "http://localhost:8082/xyz";
 
     private static final Logger log = LoggerFactory.getLogger(EchoServiceClient.class);
     
-    // Custom interceptor to log SOAP messages
-    private static class LoggingClientInterceptor implements ClientInterceptor {
-        private static final Logger interceptorLog = LoggerFactory.getLogger(LoggingClientInterceptor.class);
-        
-        @Override
-        public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-            try {
-                ByteArrayOutputStream requestStream = new ByteArrayOutputStream();
-                messageContext.getRequest().writeTo(requestStream);
-                System.out.println("\nSOAP Request XML:");
-                System.out.println(requestStream.toString(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                interceptorLog.error("Error logging request", e);
-            }
-            return true;
-        }
-        
-        @Override
-        public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-            try {
-                ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-                messageContext.getResponse().writeTo(responseStream);
-                System.out.println("\nSOAP Response XML:");
-                System.out.println(responseStream.toString(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                interceptorLog.error("Error logging response", e);
-            }
-            return true;
-        }
-        
-        @Override
-        public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
-            try {
-                ByteArrayOutputStream faultStream = new ByteArrayOutputStream();
-                messageContext.getResponse().writeTo(faultStream);
-                interceptorLog.error("SOAP Fault:\n{}", faultStream.toString(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                interceptorLog.error("Error logging fault", e);
-            }
-            return true;
-        }
-        
-        @Override
-        public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-            if (ex != null) {
-                interceptorLog.error("Exception during SOAP communication", ex);
-            }
-        }
-    }
-
     public EudrEchoResponseType getEchoServiceResponse(String query) {
 
         ObjectFactory objectFactory = new ObjectFactory();
