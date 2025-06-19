@@ -30,21 +30,26 @@ public class EudrApplication {
 		};
 	}
  */
-/* 	@Bean
+	@Bean
 	CommandLineRunner lookup(SubmissionServiceClient client) {
 		return args -> {
-			// For Test 2, 4, 5, 8 and 9
+			// For Test 2, 4, 5, 8 and 9 (submitDds)
 			// SubmitStatementResponseType submitResponse = client.getSubmissionServiceResponse();
 			// System.out.println(submitResponse.getDdsIdentifier());
 
-			// For Test 6
-			String ddsIdentifier = "6c58a09c-20d9-4a91-9300-74b4a71d8dc5";
+			// For Test 6 (amendDds)
+			String ddsIdentifier = "7de67128-3a1d-4a37-a5ce-29d8fc5c5475";
 			StatementModificationResponseType amendResponse = client.getAmendServiceResponse(ddsIdentifier);
 			System.out.println(amendResponse.getStatus());
+
+			// For Test 8 (retractDds)
+			// String ddsIdentifier = "af578328-e426-4eba-a189-c76b18a1a46c";
+			// StatementModificationResponseType amendResponse = client.getRetractServiceResponse(ddsIdentifier);
+			// System.out.println(amendResponse.getStatus());
 		};
 	}
- */
- 	@Bean
+
+/*  	@Bean
 	CommandLineRunner lookup(RetrievalServiceClient client) {
 		return args -> {
 			// For Test 3
@@ -65,4 +70,4 @@ public class EudrApplication {
 			SupplierStatement statement = client.getStatementByIdentifiersServiceResponse(referenceNumber, verificationNumber);
 		};
 	}
-}
+ */}

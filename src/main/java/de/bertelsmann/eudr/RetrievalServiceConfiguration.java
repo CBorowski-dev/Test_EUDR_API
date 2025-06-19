@@ -47,13 +47,13 @@ public class RetrievalServiceConfiguration {
         return security;
     }
 
-    @Bean (name = "retrievalServiceMarshaller")
-    public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        // this package must match the package in the <generatePackage> specified in pom.xml
-        marshaller.setContextPath("eu.europa.ec.tracesnt.certificate.eudr.retrieval.v1");
-        return marshaller;
-    }
+    // @Bean (name = "retrievalServiceMarshaller")
+    // public Jaxb2Marshaller marshaller() {
+    //     Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    //     // this package must match the package in the <generatePackage> specified in pom.xml
+    //     marshaller.setContextPath("eu.europa.ec.tracesnt.certificate.eudr.retrieval.v1");
+    //     return marshaller;
+    // }
 
     @Bean
     public RetrievalServiceClient retrievalServiceClient(Jaxb2Marshaller marshaller) {

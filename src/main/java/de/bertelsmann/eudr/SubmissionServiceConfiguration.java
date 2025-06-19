@@ -47,13 +47,13 @@ public class SubmissionServiceConfiguration {
         return security;
     }
 
-    // @Bean (name = "submissionServiceMarshaller")
-    // public Jaxb2Marshaller marshaller() {
-    //     Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-    //     // this package must match the package in the <generatePackage> specified in pom.xml
-    //     marshaller.setContextPath("eu.europa.ec.tracesnt.certificate.eudr.submission.v1");
-    //     return marshaller;
-    // }
+    @Bean (name = "submissionServiceMarshaller")
+    public Jaxb2Marshaller marshaller() {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        // this package must match the package in the <generatePackage> specified in pom.xml
+        marshaller.setContextPath("eu.europa.ec.tracesnt.certificate.eudr.submission.v1");
+        return marshaller;
+    }
 
     @Bean
     public SubmissionServiceClient submissionServiceClient(Jaxb2Marshaller marshaller) {
