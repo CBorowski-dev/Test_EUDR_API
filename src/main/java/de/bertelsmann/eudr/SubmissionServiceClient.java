@@ -35,12 +35,14 @@ public class SubmissionServiceClient extends ServiceClient {
     // public static final String URI = "http://localhost:8082/xyz";
 
     private static final Logger log = LoggerFactory.getLogger(SubmissionServiceClient.class);
-    
+
     /**
      * 
      * @return
      */
-    public SubmitStatementResponseType getSubmissionServiceResponse() {
+    public SubmitStatementResponseType getSubmissionServiceResponse(String internalReferenceNumber,
+            ActivityType activity, String descriptionOfGoods, BigDecimal netWeight, String hsHeading,
+            String associatedStatementsReferenceNumber, String associatedStatementsVerificationNumber) {
 
         ObjectFactory objectFactory = new ObjectFactory();
         SubmitStatementRequestType request = objectFactory.createSubmitStatementRequestType();
@@ -52,44 +54,47 @@ public class SubmissionServiceClient extends ServiceClient {
         DueDiligenceStatementBaseType dds = objectFactoryDDS.createDueDiligenceStatementBaseType();
 
         // set internal reference number
-        dds.setInternalReferenceNumber("BER-000010");
+        dds.setInternalReferenceNumber(internalReferenceNumber);
 
         // set Activity Type
-        dds.setActivityType(ActivityType.DOMESTIC);
+        dds.setActivityType(activity);
 
         // set HSHeading
         CommodityType commodityType = new CommodityType();
         CommercialDescriptionType cdType = new CommercialDescriptionType();
-        cdType.setDescriptionOfGoods("Rentenbescheid [Druckzeugsergebnis]");
+        cdType.setDescriptionOfGoods(descriptionOfGoods);
         GoodsMeasureType gmType = new GoodsMeasureType();
-        gmType.setNetWeight(new BigDecimal("7560"));
+        gmType.setNetWeight(netWeight);
         cdType.setGoodsMeasure(gmType);
         commodityType.setDescriptors(cdType);
 
-        commodityType.setHsHeading("490110");
+        commodityType.setHsHeading(hsHeading);
 
         // set Producers
-        List<ProducerType> producers = commodityType.getProducers();
-        ProducerType producer = new ProducerType();
-        producer.setCountry("SE");
-        producer.setName("Papermill 2");
-        producer.setGeometryGeojson("{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"ProductionPlace\":\"Farm 2\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[3.537598,44.840291],[4.855957,46.377254],[5.427246,44.964798],[3.537598,44.840291]]]}}]}".getBytes(StandardCharsets.UTF_8));
-        producers.add(producer);
+        // List<ProducerType> producers = commodityType.getProducers();
+        // ProducerType producer = new ProducerType();
+        // producer.setCountry("SE");
+        // producer.setName("Papermill 2");
+        // producer.setGeometryGeojson(
+        //         "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"ProductionPlace\":\"Farm 2\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[3.537598,44.840291],[4.855957,46.377254],[5.427246,44.964798],[3.537598,44.840291]]]}}]}"
+        //                 .getBytes(StandardCharsets.UTF_8));
+        // producers.add(producer);
 
         dds.getCommodities().add(commodityType);
 
         // set Associated Statements
         AssociatedStatementsType associatedStatementsType = new AssociatedStatementsType();
-        associatedStatementsType.setReferenceNumber("25DEEPK0O98738");
-        associatedStatementsType.setVerificationNumber("YXNAGQHJ");
+        associatedStatementsType.setReferenceNumber(associatedStatementsReferenceNumber);
+        associatedStatementsType.setVerificationNumber(associatedStatementsVerificationNumber);
         dds.getAssociatedStatements().add(associatedStatementsType);
 
         request.setStatement(dds);
 
-        JAXBElement<SubmitStatementRequestType> jaxbSubmitStatementRequestType = objectFactory.createSubmitStatementRequest(request);
+        JAXBElement<SubmitStatementRequestType> jaxbSubmitStatementRequestType = objectFactory
+                .createSubmitStatementRequest(request);
 
-
-        SoapActionCallback callback = new SoapActionCallback("http://ec.europa.eu/tracesnt/certificate/eudr/submission/submitDds") {
+        SoapActionCallback callback = new SoapActionCallback(
+                "http://ec.europa.eu/tracesnt/certificate/eudr/submission/submitDds") {
 
             @Override
             public void doWithMessage(WebServiceMessage message) throws IOException {
@@ -97,9 +102,10 @@ public class SubmissionServiceClient extends ServiceClient {
                 if (message instanceof SoapMessage) {
                     SoapMessage soapMessage = (SoapMessage) message;
                     SoapHeader header = soapMessage.getSoapHeader();
-                    
+
                     // Create the WebServiceClientId element with the correct namespace
-                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4", "WebServiceClientId", "v4");
+                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4",
+                            "WebServiceClientId", "v4");
                     header.addHeaderElement(webServiceClientIdName).setText("eudr-test");
                 }
                 super.doWithMessage(message);
@@ -109,10 +115,10 @@ public class SubmissionServiceClient extends ServiceClient {
 
         // Use the standard WebServiceTemplate
         WebServiceTemplate template = getWebServiceTemplate();
-        
+
         // Create a custom interceptor to log the request and response
         ClientInterceptor[] interceptors = template.getInterceptors();
-        
+
         // Add a logging interceptor
         ClientInterceptor[] newInterceptors;
         if (interceptors != null) {
@@ -122,15 +128,16 @@ public class SubmissionServiceClient extends ServiceClient {
         } else {
             newInterceptors = new ClientInterceptor[] { new LoggingClientInterceptor() };
         }
-        
+
         template.setInterceptors(newInterceptors);
-        
+
         log.info("Requesting response from EUDR Submission Service");
 
-        JAXBElement<SubmitStatementResponseType> response = (JAXBElement<SubmitStatementResponseType>) template.marshalSendAndReceive(
-            SubmissionServiceClient.URI,
-            jaxbSubmitStatementRequestType, 
-            callback);
+        JAXBElement<SubmitStatementResponseType> response = (JAXBElement<SubmitStatementResponseType>) template
+                .marshalSendAndReceive(
+                        SubmissionServiceClient.URI,
+                        jaxbSubmitStatementRequestType,
+                        callback);
 
         return response.getValue();
     }
@@ -140,7 +147,9 @@ public class SubmissionServiceClient extends ServiceClient {
      * @param ddsIdentifier
      * @return
      */
-    public StatementModificationResponseType getAmendServiceResponse(String ddsIdentifier) {
+    public StatementModificationResponseType getAmendServiceResponse(String ddsIdentifier, String internalReferenceNumber,
+            ActivityType activity, String descriptionOfGoods, BigDecimal netWeight, String hsHeading,
+            String associatedStatementsReferenceNumber, String associatedStatementsVerificationNumber) {
 
         ObjectFactory objectFactory = new ObjectFactory();
         AmendStatementRequestType request = objectFactory.createAmendStatementRequestType();
@@ -152,10 +161,10 @@ public class SubmissionServiceClient extends ServiceClient {
         DueDiligenceStatementBaseType dds = objectFactoryDDS.createDueDiligenceStatementBaseType();
 
         // set internal reference number
-        dds.setInternalReferenceNumber("BER-000010");
+        dds.setInternalReferenceNumber(internalReferenceNumber);
 
         // set Activity Type
-        dds.setActivityType(ActivityType.DOMESTIC);
+        dds.setActivityType(activity);
 
         // set Country of Activity
         dds.setCountryOfActivity(CountryType.DE);
@@ -163,36 +172,39 @@ public class SubmissionServiceClient extends ServiceClient {
         // set HSHeading
         CommodityType commodityType = new CommodityType();
         CommercialDescriptionType cdType = new CommercialDescriptionType();
-        cdType.setDescriptionOfGoods("Rentenbescheid [Druckzeugsergebnis]");
+        cdType.setDescriptionOfGoods(descriptionOfGoods);
         GoodsMeasureType gmType = new GoodsMeasureType();
-        gmType.setNetWeight(new BigDecimal("7560"));
+        gmType.setNetWeight(netWeight);
         cdType.setGoodsMeasure(gmType);
         commodityType.setDescriptors(cdType);
 
-        commodityType.setHsHeading("490110");
+        commodityType.setHsHeading(hsHeading);
 
         // set Producers
         List<ProducerType> producers = commodityType.getProducers();
         ProducerType producer = new ProducerType();
         producer.setCountry("SE");
         producer.setName("Papermill 2");
-        producer.setGeometryGeojson("{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"ProductionPlace\":\"Farm 2\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[3.537598,44.840291],[4.855957,46.377254],[5.427246,44.964798],[3.537598,44.840291]]]}}]}".getBytes(StandardCharsets.UTF_8));
+        producer.setGeometryGeojson(
+                "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"ProductionPlace\":\"Farm 2\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[3.537598,44.840291],[4.855957,46.377254],[5.427246,44.964798],[3.537598,44.840291]]]}}]}"
+                        .getBytes(StandardCharsets.UTF_8));
         producers.add(producer);
 
         dds.getCommodities().add(commodityType);
 
         // set Associated Statements
         AssociatedStatementsType associatedStatementsType = new AssociatedStatementsType();
-        associatedStatementsType.setReferenceNumber("25DEEPK0O98738");
-        associatedStatementsType.setVerificationNumber("YXNAGQHJ");
+        associatedStatementsType.setReferenceNumber(associatedStatementsReferenceNumber);
+        associatedStatementsType.setVerificationNumber(associatedStatementsVerificationNumber);
         dds.getAssociatedStatements().add(associatedStatementsType);
 
         request.setStatement(dds);
 
-        JAXBElement<AmendStatementRequestType> jaxbAmendStatementRequestType = objectFactory.createAmendStatementRequest(request);
+        JAXBElement<AmendStatementRequestType> jaxbAmendStatementRequestType = objectFactory
+                .createAmendStatementRequest(request);
 
-
-        SoapActionCallback callback = new SoapActionCallback("http://ec.europa.eu/tracesnt/certificate/eudr/submission/amendDds") {
+        SoapActionCallback callback = new SoapActionCallback(
+                "http://ec.europa.eu/tracesnt/certificate/eudr/submission/amendDds") {
 
             @Override
             public void doWithMessage(WebServiceMessage message) throws IOException {
@@ -200,9 +212,10 @@ public class SubmissionServiceClient extends ServiceClient {
                 if (message instanceof SoapMessage) {
                     SoapMessage soapMessage = (SoapMessage) message;
                     SoapHeader header = soapMessage.getSoapHeader();
-                    
+
                     // Create the WebServiceClientId element with the correct namespace
-                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4", "WebServiceClientId", "v4");
+                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4",
+                            "WebServiceClientId", "v4");
                     header.addHeaderElement(webServiceClientIdName).setText("eudr-test");
                 }
                 super.doWithMessage(message);
@@ -212,10 +225,10 @@ public class SubmissionServiceClient extends ServiceClient {
 
         // Use the standard WebServiceTemplate
         WebServiceTemplate template = getWebServiceTemplate();
-        
+
         // Create a custom interceptor to log the request and response
         ClientInterceptor[] interceptors = template.getInterceptors();
-        
+
         // Add a logging interceptor
         ClientInterceptor[] newInterceptors;
         if (interceptors != null) {
@@ -225,20 +238,21 @@ public class SubmissionServiceClient extends ServiceClient {
         } else {
             newInterceptors = new ClientInterceptor[] { new LoggingClientInterceptor() };
         }
-        
+
         template.setInterceptors(newInterceptors);
-        
+
         log.info("Requesting response from EUDR Submission Service");
 
-        JAXBElement<StatementModificationResponseType> response = (JAXBElement<StatementModificationResponseType>) template.marshalSendAndReceive(
-            SubmissionServiceClient.URI,
-            jaxbAmendStatementRequestType, 
-            callback);
+        JAXBElement<StatementModificationResponseType> response = (JAXBElement<StatementModificationResponseType>) template
+                .marshalSendAndReceive(
+                        SubmissionServiceClient.URI,
+                        jaxbAmendStatementRequestType,
+                        callback);
 
         return response.getValue();
     }
 
-        /**
+    /**
      * 
      * @param ddsIdentifier
      * @return
@@ -251,10 +265,11 @@ public class SubmissionServiceClient extends ServiceClient {
         // set DDS Identifier
         request.setDdsIdentifier(ddsIdentifier);
 
-        JAXBElement<RetractStatementRequestType> jaxbRetractStatementRequestType = objectFactory.createRetractStatementRequest(request);
+        JAXBElement<RetractStatementRequestType> jaxbRetractStatementRequestType = objectFactory
+                .createRetractStatementRequest(request);
 
-
-        SoapActionCallback callback = new SoapActionCallback("http://ec.europa.eu/tracesnt/certificate/eudr/submission/retractDds") {
+        SoapActionCallback callback = new SoapActionCallback(
+                "http://ec.europa.eu/tracesnt/certificate/eudr/submission/retractDds") {
 
             @Override
             public void doWithMessage(WebServiceMessage message) throws IOException {
@@ -262,9 +277,10 @@ public class SubmissionServiceClient extends ServiceClient {
                 if (message instanceof SoapMessage) {
                     SoapMessage soapMessage = (SoapMessage) message;
                     SoapHeader header = soapMessage.getSoapHeader();
-                    
+
                     // Create the WebServiceClientId element with the correct namespace
-                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4", "WebServiceClientId", "v4");
+                    QName webServiceClientIdName = new QName("http://ec.europa.eu/sanco/tracesnt/base/v4",
+                            "WebServiceClientId", "v4");
                     header.addHeaderElement(webServiceClientIdName).setText("eudr-test");
                 }
                 super.doWithMessage(message);
@@ -274,10 +290,10 @@ public class SubmissionServiceClient extends ServiceClient {
 
         // Use the standard WebServiceTemplate
         WebServiceTemplate template = getWebServiceTemplate();
-        
+
         // Create a custom interceptor to log the request and response
         ClientInterceptor[] interceptors = template.getInterceptors();
-        
+
         // Add a logging interceptor
         ClientInterceptor[] newInterceptors;
         if (interceptors != null) {
@@ -287,15 +303,16 @@ public class SubmissionServiceClient extends ServiceClient {
         } else {
             newInterceptors = new ClientInterceptor[] { new LoggingClientInterceptor() };
         }
-        
+
         template.setInterceptors(newInterceptors);
-        
+
         log.info("Requesting response from EUDR Retract Service");
 
-        JAXBElement<StatementModificationResponseType> response = (JAXBElement<StatementModificationResponseType>) template.marshalSendAndReceive(
-            SubmissionServiceClient.URI,
-            jaxbRetractStatementRequestType, 
-            callback);
+        JAXBElement<StatementModificationResponseType> response = (JAXBElement<StatementModificationResponseType>) template
+                .marshalSendAndReceive(
+                        SubmissionServiceClient.URI,
+                        jaxbRetractStatementRequestType,
+                        callback);
 
         return response.getValue();
     }

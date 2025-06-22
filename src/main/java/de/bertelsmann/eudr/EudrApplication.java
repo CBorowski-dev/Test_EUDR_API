@@ -1,5 +1,6 @@
 package de.bertelsmann.eudr;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
@@ -7,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import eu.europa.ec.tracesnt.certificate.eudr.model.v1.ActivityType;
 import eu.europa.ec.tracesnt.certificate.eudr.retrieval.v1.StatementInfoType;
 import eu.europa.ec.tracesnt.certificate.eudr.submission.v1.SubmitStatementResponseType;
 import eu.europa.ec.tracesnt.certificate.eudr.retrieval.v1.SupplierStatement;
@@ -20,7 +22,7 @@ public class EudrApplication {
 		SpringApplication.run(EudrApplication.class, args);
 	}
 
-/* 	@Bean
+/*  	@Bean
 	CommandLineRunner lookup(EchoServiceClient client) {
 		return args -> {
 			// For Test 1
@@ -30,17 +32,21 @@ public class EudrApplication {
 		};
 	}
  */
-	@Bean
+ 	@Bean
 	CommandLineRunner lookup(SubmissionServiceClient client) {
 		return args -> {
 			// For Test 2, 4, 5, 8 and 9 (submitDds)
-			// SubmitStatementResponseType submitResponse = client.getSubmissionServiceResponse();
-			// System.out.println(submitResponse.getDdsIdentifier());
+			SubmitStatementResponseType submitResponse = client.getSubmissionServiceResponse("BER-000012",
+					ActivityType.DOMESTIC, "Flugblatt2 [Druckzeugsergebnis]", new BigDecimal("450.456"), "490110",
+					"25DEEPK0O98738", "YXNAGQHJ");
+			System.out.println(submitResponse.getDdsIdentifier());
 
 			// For Test 6 (amendDds)
-			String ddsIdentifier = "7de67128-3a1d-4a37-a5ce-29d8fc5c5475";
-			StatementModificationResponseType amendResponse = client.getAmendServiceResponse(ddsIdentifier);
-			System.out.println(amendResponse.getStatus());
+			// String ddsIdentifier = "7de67128-3a1d-4a37-a5ce-29d8fc5c5475";
+			// StatementModificationResponseType amendResponse = client.getAmendServiceResponse(ddsIdentifier,
+			// 		"BER-000010", ActivityType.DOMESTIC, "Rentenbescheid [Druckzeugsergebnis]", 
+			// 		new BigDecimal("7560"), "490110", "25DEEPK0O98738", "YXNAGQHJ");
+			// System.out.println(amendResponse.getStatus());
 
 			// For Test 8 (retractDds)
 			// String ddsIdentifier = "af578328-e426-4eba-a189-c76b18a1a46c";
