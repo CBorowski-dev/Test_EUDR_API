@@ -47,7 +47,6 @@ public class SubmissionServiceConfiguration {
         return security;
     }
 
-    @Bean (name = "submissionServiceMarshaller")
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         // this package must match the package in the <generatePackage> specified in pom.xml
@@ -56,7 +55,8 @@ public class SubmissionServiceConfiguration {
     }
 
     @Bean
-    public SubmissionServiceClient submissionServiceClient(Jaxb2Marshaller marshaller) {
+    public SubmissionServiceClient submissionServiceClient() {
+        Jaxb2Marshaller marshaller = marshaller();
         SubmissionServiceClient client = new SubmissionServiceClient();
         client.setDefaultUri(SubmissionServiceClient.URI);
         client.setMarshaller(marshaller);
